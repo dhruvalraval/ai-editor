@@ -38,18 +38,14 @@ export default [
       globals: {
         React: 'readonly',
         JSX: 'readonly',
+        browser: true,
+        es2020: true
       },
     },
     settings: {
       react: {
         version: 'detect',
       },
-    },
-    linterOptions: {
-      env: {
-        browser: true,
-        es2020: true
-      }
     },
     rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
