@@ -45,7 +45,12 @@ export default [
         version: 'detect',
       },
     },
-    env: ['browser'],
+    linterOptions: {
+      env: {
+        browser: true,
+        es2020: true
+      }
+    },
     rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       quotes: ['error', 'single', { avoidEscape: true }],
