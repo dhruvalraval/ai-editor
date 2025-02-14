@@ -19,7 +19,7 @@ export function SingleSelectMenu({title, options, setSelectedOption}: {title: st
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">{title}</Button>
+      <Button variant="outline" size="sm" className="h-8">{title}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>

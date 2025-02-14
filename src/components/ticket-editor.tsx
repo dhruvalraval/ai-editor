@@ -311,7 +311,7 @@ function Component({isEditable = false, editableContent, onSubmit}: EditorProps)
             <>
               {Object.entries(selectedTags).map(([key, value]) => {
                 return value && (
-                  <Badge key={key} variant="outline" className="flex items-center gap-2 bg-indigo-50">
+                  <Badge key={key} variant="outline" className="flex items-center gap-2 border-dashed">
                     {tagOptions.find(option => option.value === key)?.icon}
                     {tagOptions.find(option => option.value === key)?.label}
                   </Badge>
