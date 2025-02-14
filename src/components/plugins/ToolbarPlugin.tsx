@@ -1,22 +1,4 @@
 import {Dispatch, useCallback, useEffect, useState} from 'react'
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  Bold,
-  Heading1,
-  Heading2,
-  Italic,
-  Link2,
-  List,
-  ListOrdered,
-  Quote,
-  Redo2,
-  Strikethrough,
-  Type,
-  Underline,
-  Undo2,
-} from 'lucide-react'
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link'
 import {
   $isListNode,
@@ -37,14 +19,20 @@ import {
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_NORMAL,
   EditorState,
-  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   KEY_MODIFIER_COMMAND,
   LexicalEditor,
-  REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
-  UNDO_COMMAND,
 } from 'lexical'
+import {
+  Bold,
+  Italic,
+  Link2,
+  List,
+  ListOrdered,
+  Quote,
+  Underline,
+} from 'lucide-react'
 import getSelectedNode from '../../utils/getSelectedNode'
 import {sanitizeUrl} from '../../utils/urls'
 
@@ -56,10 +44,7 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
   const [isBold, setIsBold] = useState(false)
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
-  const [isStrikethrough, setIsStrikethrough] = useState(false)
   const [blockType, setBlockType] = useState('paragraph')
-  const [canUndo, setCanUndo] = useState(false)
-  const [canRedo, setCanRedo] = useState(false)
   const [activeEditor, setActiveEditor] = useState(editor)
 
   const $updateToolbar = useCallback(() => {
@@ -85,7 +70,6 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
       setIsBold(selection.hasFormat('bold'))
       setIsItalic(selection.hasFormat('italic'))
       setIsUnderline(selection.hasFormat('underline'))
-      setIsStrikethrough(selection.hasFormat('strikethrough'))
 
       // Check if the selection contains a link
       const node = getSelectedNode(selection)
@@ -110,22 +94,6 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
         (_payload, newEditor) => {
           setActiveEditor(newEditor)
           $updateToolbar()
-          return false
-        },
-        LowPriority,
-      ),
-      editor.registerCommand(
-        CAN_UNDO_COMMAND,
-        payload => {
-          setCanUndo(payload)
-          return false
-        },
-        LowPriority,
-      ),
-      editor.registerCommand(
-        CAN_REDO_COMMAND,
-        payload => {
-          setCanRedo(payload)
           return false
         },
         LowPriority,

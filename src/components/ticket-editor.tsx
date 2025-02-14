@@ -7,6 +7,7 @@ import {AutoLinkNode, LinkNode} from '@lexical/link'
 import {ListItemNode, ListNode} from '@lexical/list'
 import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin'
 import {LexicalComposer} from '@lexical/react/LexicalComposer'
+import {ContentEditable} from '@lexical/react/LexicalContentEditable'
 import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary'
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin'
 import {LinkPlugin} from '@lexical/react/LexicalLinkPlugin'
@@ -14,21 +15,20 @@ import {ListPlugin} from '@lexical/react/LexicalListPlugin'
 import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin'
 import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin'
 import {HeadingNode, QuoteNode} from '@lexical/rich-text'
+import { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu'
 import {LexicalEditor} from 'lexical'
-import FloatingLinkEditorPlugin from './plugins/FloatingLinkModal'
-import InitializeContentPlugin from './plugins/InitializeContentPlugin'
+import { Bug, BugPlay, CircleCheck, FireExtinguisher, Plus, ShieldAlert } from 'lucide-react'
+import { Button } from '@/components/ui/button';
 import {$isEmpty} from '../utils/checkEmpty'
 import {validateUrl} from '../utils/urls'
-import { ToolbarPlugin } from './plugins/ToolbarPlugin'
-import {ContentEditable} from '@lexical/react/LexicalContentEditable'
-import { Button } from "@/components/ui/button";
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
 import { MultiSelectMenu } from './multiselect-menu'
-import { Badge } from './ui/badge'
-import { Bug, BugPlay, CircleCheck, FireExtinguisher, Plus, ShieldAlert } from 'lucide-react'
+import FloatingLinkEditorPlugin from './plugins/FloatingLinkModal'
+import InitializeContentPlugin from './plugins/InitializeContentPlugin'
+import { ToolbarPlugin } from './plugins/ToolbarPlugin'
 import { SingleSelectMenu } from './singleselect-menu'
+import { Badge } from './ui/badge'
 
-type Checked = DropdownMenuCheckboxItemProps["checked"]
+type Checked = DropdownMenuCheckboxItemProps['checked']
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -288,7 +288,7 @@ function Component({isEditable = false, editableContent, onSubmit, title}: Edito
             <HistoryPlugin />
             <AutoFocusPlugin />
             <LinkPlugin validateUrl={validateUrl} />
-            <InitializeContentPlugin
+              <InitializeContentPlugin
               isContentAvailable={isEditable}
               htmlContent={editableContent!}
             />

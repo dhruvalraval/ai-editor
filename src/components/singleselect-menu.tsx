@@ -1,13 +1,12 @@
-import { Button } from "@/components/ui/button"
+import { Dispatch } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Dispatch } from "react"
+} from '@/components/ui/dropdown-menu'
 
 	interface Option {
 			label: string
