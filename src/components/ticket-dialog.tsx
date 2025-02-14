@@ -1,18 +1,18 @@
 'use client'
 
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { ChevronRight, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { ChevronRight, Zap } from "lucide-react";
-import EditorCarrier from "./ticket-editor";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import EditorCarrier from './ticket-editor';
 
 export function TicketDialog() {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const [open, setOpen] = useState(false);
 
   return (
@@ -41,6 +41,7 @@ export function TicketDialog() {
           />
 
           {/* Editor */}
+          {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
           <EditorCarrier onSubmit={() => {}} />
 
 

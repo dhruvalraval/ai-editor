@@ -8,15 +8,13 @@ import {
   REMOVE_LIST_COMMAND,
 } from '@lexical/list'
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
-import {$createHeadingNode, $createQuoteNode, $isHeadingNode} from '@lexical/rich-text'
+import {$createQuoteNode, $isHeadingNode} from '@lexical/rich-text'
 import {$setBlocksType} from '@lexical/selection'
 import {$getNearestNodeOfType, mergeRegister} from '@lexical/utils'
 import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
-  CAN_REDO_COMMAND,
-  CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_NORMAL,
   EditorState,
   FORMAT_TEXT_COMMAND,
@@ -208,30 +206,6 @@ const formatParagraph = ({blockType, editor}: ToolbarPluginProps) => {
 
       if ($isRangeSelection(selection)) {
         $setBlocksType(selection, () => $createParagraphNode())
-      }
-    })
-  }
-}
-
-const formatLargeHeading = ({blockType, editor}: ToolbarPluginProps) => {
-  if (blockType !== 'h1') {
-    editor.update(() => {
-      const selection = $getSelection()
-
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode('h1'))
-      }
-    })
-  }
-}
-
-const formatSmallHeading = ({blockType, editor}: ToolbarPluginProps) => {
-  if (blockType !== 'h2') {
-    editor.update(() => {
-      const selection = $getSelection()
-
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode('h2'))
       }
     })
   }

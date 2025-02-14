@@ -1,6 +1,6 @@
 'use client'
 
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useMemo, useRef, useState} from 'react'
 import {CodeHighlightNode, CodeNode} from '@lexical/code'
 import {$generateHtmlFromNodes} from '@lexical/html'
 import {AutoLinkNode, LinkNode} from '@lexical/link'
@@ -107,7 +107,6 @@ type EditorProps = {
   isEditable?: boolean
   editableContent?: string
   onSubmit: (content: string) => void
-  title?: string
 }
 
 interface Option {
@@ -117,7 +116,7 @@ interface Option {
   icon?: React.ReactNode
 }
 
-function Component({isEditable = false, editableContent, onSubmit, title}: EditorProps) {
+function Component({isEditable = false, editableContent, onSubmit}: EditorProps) {
   const initialConfig = {
     namespace: 'MyEditor',
     theme: lexicalEditorTheme,

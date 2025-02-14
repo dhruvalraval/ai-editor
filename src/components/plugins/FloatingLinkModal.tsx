@@ -1,7 +1,6 @@
 import {Dispatch, useCallback, useEffect, useRef, useState} from 'react'
 import * as React from 'react'
 import {createPortal} from 'react-dom'
-import {CheckCircle2, Pencil, Trash2, Circle} from 'lucide-react'
 import {$createLinkNode, $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link'
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
 import {$findMatchingParent, mergeRegister} from '@lexical/utils'
@@ -18,6 +17,7 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical'
+import {CheckCircle2, Circle,Pencil, Trash2} from 'lucide-react'
 import getSelectedNode from '../../utils/getSelectedNode'
 import {setFloatingElemPositionForLinkEditor} from '../../utils/setFloatingElemPositionForLinkEditor'
 import {sanitizeUrl} from '../../utils/urls'

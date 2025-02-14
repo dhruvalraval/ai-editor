@@ -58,6 +58,7 @@ export default [
         argsIgnorePattern: '^_',
         ignoreRestSiblings: true,
       }],
+      'no-undef': 'off',
       '@typescript-eslint/no-empty-function': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': 'error',
