@@ -23,12 +23,15 @@ import {
   SELECTION_CHANGE_COMMAND,
 } from 'lexical'
 import {
+  AtSign,
   Bold,
   Italic,
   Link2,
   List,
   ListOrdered,
+  Paperclip,
   Quote,
+  Smile,
   Underline,
 } from 'lucide-react'
 import getSelectedNode from '../../utils/getSelectedNode'
@@ -144,6 +147,21 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
 
   return (
       <div className='flex items-center justify-start w-full gap-4'>
+          <span>
+            <button color={isBold ? 'primary' : 'default'}>
+              <Paperclip strokeWidth={1} width={18} height={18} />
+            </button>
+          </span>
+          <span>
+            <button color={isBold ? 'primary' : 'default'}>
+              <AtSign strokeWidth={1} width={18} height={18} />
+            </button>
+          </span>
+          <span>
+            <button color={isBold ? 'primary' : 'default'}>
+              <Smile strokeWidth={1} width={18} height={18} />
+            </button>
+          </span>
           <span>
             <button
               onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}

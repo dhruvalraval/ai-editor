@@ -1,6 +1,6 @@
 'use client'
 
-import {memo, useCallback, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CodeHighlightNode, CodeNode} from '@lexical/code'
 import {$generateHtmlFromNodes} from '@lexical/html'
 import {AutoLinkNode, LinkNode} from '@lexical/link'
@@ -17,7 +17,8 @@ import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin'
 import {HeadingNode, QuoteNode} from '@lexical/rich-text'
 import { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu'
 import {LexicalEditor} from 'lexical'
-import { Bug, BugPlay, CircleCheck, FireExtinguisher, Plus, ShieldAlert } from 'lucide-react'
+import { Book, Brush, Bug, Calendar, CircleCheck, CircleDashed, CircleUserRound, ClockArrowUp, CodeXml, FireExtinguisher, Flag, Grid2x2, Megaphone, Package, Plus, ShieldAlert, Sparkles, Tag } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Button } from '@/components/ui/button';
 import {$isEmpty} from '../utils/checkEmpty'
 import {validateUrl} from '../utils/urls'
@@ -107,6 +108,9 @@ type EditorProps = {
   isEditable?: boolean
   editableContent?: string
   onSubmit: (content: string) => void
+  suggestedTags: string[]
+  isLoading: boolean
+  reset: boolean
 }
 
 interface Option {
@@ -116,7 +120,7 @@ interface Option {
   icon?: React.ReactNode
 }
 
-function Component({isEditable = false, editableContent, onSubmit}: EditorProps) {
+function Component({isEditable = false, editableContent, onSubmit, suggestedTags, isLoading, reset}: EditorProps) {
   const initialConfig = {
     namespace: 'MyEditor',
     theme: lexicalEditorTheme,
@@ -138,19 +142,31 @@ function Component({isEditable = false, editableContent, onSubmit}: EditorProps)
       label: 'Performance',
       value: 'performance',
       icon: <CircleCheck className="w-4 h-4 mr-2" />
+    },  {
+      label: 'Productivity',
+      value: 'productivity',
+      icon: <ClockArrowUp className="w-4 h-4 mr-2" />
+    },  {
+      label: 'Design',
+      value: 'design',
+      icon: <Brush className="w-4 h-4 mr-2" />
     }, {
-      label: 'Bug',
-      value: 'bug',
+      label: 'Development',
+      value: 'development',
+      icon: <CodeXml className="w-4 h-4 mr-2" />
+    },{
+      label: 'Marketing',
+      value: 'marketing',
+      icon: <Megaphone className="w-4 h-4 mr-2" />
+    },  {
+      label: 'Bugs',
+      value: 'bugs',
       icon: <Bug className="w-4 h-4 mr-2" />
     }, {
       label: 'Feature',
       value: 'feature',
       icon: <Plus className="w-4 h-4 mr-2" />
-    },  {
-      label: 'Bugfix',
-      value: 'bugfix',
-      icon: <BugPlay className="w-4 h-4 mr-2" />
-    },  {
+    }, {
       label: 'Urgent',
       value: 'urgent',
       icon: <ShieldAlert className="w-4 h-4 mr-2" />
@@ -158,7 +174,15 @@ function Component({isEditable = false, editableContent, onSubmit}: EditorProps)
       label: 'Hotfix',
       value: 'hotfix',
       icon: <FireExtinguisher className="w-4 h-4 mr-2" />
-    },]
+    }, {
+      label: 'Documentation',
+      value: 'documentation',
+      icon: <Book className="w-4 h-4 mr-2" />
+    },{
+      label: 'Release',
+      value: 'release',
+      icon: <Package className="w-4 h-4 mr-2" />
+    }, ]
   ), [])
 
   const todoOptions = useMemo(() => (
@@ -227,6 +251,34 @@ function Component({isEditable = false, editableContent, onSubmit}: EditorProps)
   const [selectedAssignee, setSelectedAssignee] = useState<Option | null>(null)
   const [selectedPriority, setSelectedPriority] = useState<Option | null>(null)
   const [selectedProject, setSelectedProject] = useState<Option | null>(null)
+
+  useEffect(() => {
+    if (reset) {
+      setSelectedTags({})
+      setSelectedTodo(null)
+      setSelectedAssignee(null)
+      setSelectedPriority(null)
+      setSelectedProject(null)
+      editorRef.current?.update(() => {
+        const root = editorRef.current?.getRootElement()
+        if (root) {
+          root.innerHTML = ''
+        }
+      })
+    }
+  }, [reset])
+  
+
+  useEffect(() => {
+    if (suggestedTags.length > 0) {
+      setSelectedTags(
+        suggestedTags.reduce((acc, tag) => ({
+          ...acc,
+          [tag]: true
+        }), {})
+      )
+    }
+  }, [suggestedTags])
 
 
   const exportToHtml = useCallback(
@@ -306,48 +358,128 @@ function Component({isEditable = false, editableContent, onSubmit}: EditorProps)
               }}
             />
           </div>
-          <div className="flex flex-wrap gap-2 mt-4">
-          {selectedTags && (
-            <>
-              {Object.entries(selectedTags).map(([key, value]) => {
-                return value && (
-                  <Badge key={key} variant="outline" className="flex items-center gap-2 border-dashed">
-                    {tagOptions.find(option => option.value === key)?.icon}
-                    {tagOptions.find(option => option.value === key)?.label}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {isLoading && (
+              <Sparkles className="w-4 h-4 animate-ping text-indigo-600 mr-2" />
+            )}
+            <AnimatePresence>
+              {selectedTags && (
+                <>
+                  {Object.entries(selectedTags).map(([key, value]) => {
+                    return value && (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0}}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.3, delay: 0.2, }}
+                        layout
+                      >
+                      <Badge key={key} variant="outline" className="flex items-center gap-2 border-dashed">
+                        {tagOptions.find(option => option.value === key)?.icon}
+                        {tagOptions.find(option => option.value === key)?.label}
+                      </Badge>
+                      </motion.div>
+                    )
+                  })}
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <AnimatePresence>
+              {selectedTodo && (
+                <motion.div
+                key={selectedTodo.value}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+                >
+                <Badge variant="outline" className="flex items-center gap-2 bg-cyan-50">
+                  {todoOptions.find(option => option.value === selectedTodo.value)?.label}
+                </Badge>  
+              </motion.div>
+              )}
+              {selectedAssignee && (
+                <motion.div
+                key={selectedAssignee.value}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+                >
+                  <Badge variant="outline" className="flex items-center gap-2 bg-amber-50">
+                    {assigneeOptions.find(option => option.value === selectedAssignee.value)?.label}
                   </Badge>
-                )
-              })}
-            </>
-          )}
-          {selectedTodo && (
-            <Badge variant="outline" className="flex items-center gap-2 bg-cyan-50">
-              {todoOptions.find(option => option.value === selectedTodo.value)?.label}
-            </Badge>
-          )}
-          {selectedAssignee && (
-            <Badge variant="outline" className="flex items-center gap-2 bg-amber-50">
-              {assigneeOptions.find(option => option.value === selectedAssignee.value)?.label}
-            </Badge>
-          )}
-          {selectedPriority && (
-            <Badge variant="outline" className="flex items-center gap-2 " style={{backgroundColor: selectedPriority.value === 'critical' ? '#ffaeae' : selectedPriority.value === 'high' ? '#ffe2ae' : selectedPriority.value === 'medium' ? '#fff6ae' : selectedPriority.value === 'low' ? '#b8ffae' : '#fefefe'}}>
-              {priorityOptions.find(option => option.value === selectedPriority.value)?.label}
-            </Badge>
-          )}
-          {selectedProject && ( 
-            <Badge variant="outline" className="flex items-center gap-2 bg-blue-50">
-              {projectOptions.find(option => option.value === selectedProject.value)?.label}
-            </Badge>
-          )}
+                </motion.div>
+              )}
+              {selectedPriority && (
+                <motion.div
+                key={selectedPriority.value}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+                >
+                  <Badge variant="outline" className="flex items-center gap-2 " style={{backgroundColor: selectedPriority.value === 'critical' ? '#ffaeae' : selectedPriority.value === 'high' ? '#ffe2ae' : selectedPriority.value === 'medium' ? '#fff6ae' : selectedPriority.value === 'low' ? '#b8ffae' : '#fefefe'}}>
+                    {priorityOptions.find(option => option.value === selectedPriority.value)?.label}
+                  </Badge>
+                </motion.div>
+              )}
+              {selectedProject && ( 
+                <motion.div
+                key={selectedProject.value}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                layout
+                >
+                  <Badge variant="outline" className="flex items-center gap-2 bg-blue-50">
+                    {projectOptions.find(option => option.value === selectedProject.value)?.label}
+                  </Badge>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2 mt-4">
-            <SingleSelectMenu title="Todo" options={todoOptions} setSelectedOption={setSelectedTodo} />
-            <SingleSelectMenu title="Assignee" options={assigneeOptions} setSelectedOption={setSelectedAssignee} />
-            <SingleSelectMenu title="Priority" options={priorityOptions} setSelectedOption={setSelectedPriority} />
-            <MultiSelectMenu selectedOptions={selectedTags} setSelectedOptions={setSelectedTags} title="Tags" options={tagOptions} />
-            <SingleSelectMenu title="Project" options={projectOptions} setSelectedOption={setSelectedProject} />
-            <Button variant="outline" size="sm" className="h-8">
+            <SingleSelectMenu title={
+              <div className="flex items-center gap-2">
+                <CircleDashed />
+                Todo
+              </div>
+            } options={todoOptions} setSelectedOption={setSelectedTodo} />
+            <SingleSelectMenu title={
+              <div className="flex items-center gap-2">
+                <CircleUserRound />
+                Assignee
+                </div>
+            } options={assigneeOptions} setSelectedOption={setSelectedAssignee} />
+            <SingleSelectMenu title={
+              <div className="flex items-center gap-2">
+                <Flag />
+                Priority
+              </div>
+            } options={priorityOptions} setSelectedOption={setSelectedPriority} />
+            <MultiSelectMenu selectedOptions={selectedTags} setSelectedOptions={setSelectedTags} title={
+              <div className="flex items-center gap-2">
+                <Tag />
+                Tags
+              </div>
+            } options={tagOptions} />
+            <SingleSelectMenu title={
+              <div className="flex items-center gap-2">
+                <Grid2x2 />
+                Project
+              </div>
+            } options={projectOptions} setSelectedOption={setSelectedProject} />
+            <Button variant="outline" size="sm" className="h-8 flex items-center gap-2">
+              <Calendar />
               Due Date
             </Button>
           </div>

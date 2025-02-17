@@ -21,7 +21,7 @@ interface Option {
 }
 
 interface DropdownMenuCheckboxesProps {
-  title: string
+  title: React.ReactElement<unknown> | string
   options: Option[]
   selectedOptions: { [key: string]: Checked }
   setSelectedOptions: React.Dispatch<React.SetStateAction<{ [key: string]: Checked }>>

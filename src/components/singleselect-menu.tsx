@@ -1,4 +1,4 @@
-import { Dispatch } from 'react'
+import { Dispatch, ReactElement } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
 			icon?: React.ReactNode
 		}
 
-export function SingleSelectMenu({title, options, setSelectedOption}: {title: string, options: Option[], setSelectedOption: Dispatch<React.SetStateAction<Option | null>>}) {
+export function SingleSelectMenu({title, options, setSelectedOption}: {title: ReactElement<unknown> | string, options: Option[], setSelectedOption: Dispatch<React.SetStateAction<Option | null>>}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
