@@ -1,16 +1,18 @@
-import {Dispatch, useCallback, useEffect, useState} from 'react'
-import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link'
+import { Dispatch, useCallback, useEffect, useState } from 'react'
+import { $createCodeNode } from '@lexical/code'
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link'
 import {
   $isListNode,
+  INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
   ListNode,
   REMOVE_LIST_COMMAND,
 } from '@lexical/list'
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
-import {$createQuoteNode, $isHeadingNode} from '@lexical/rich-text'
-import {$setBlocksType} from '@lexical/selection'
-import {$getNearestNodeOfType, mergeRegister} from '@lexical/utils'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { $createQuoteNode, $isHeadingNode } from '@lexical/rich-text'
+import { $setBlocksType, $wrapNodes } from '@lexical/selection'
+import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils'
 import {
   $createParagraphNode,
   $getSelection,
@@ -22,24 +24,27 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical'
-import {
-  AtSign,
-  Bold,
-  Italic,
-  Link2,
-  List,
-  ListOrdered,
-  Paperclip,
-  Quote,
-  Smile,
-  Underline,
-} from 'lucide-react'
+import { Quote, Underline } from 'lucide-react'
+import AttachmentIcon from '../../../public/svgs/attachment-icon.svg'
+import BoldIcon from '../../../public/svgs/bold-icon.svg'
+import CheckboxListIcon from '../../../public/svgs/checklist-icon.svg'
+import CodeIcon from '../../../public/svgs/code-icon.svg'
+import EmojiIcon from '../../../public/svgs/emoji-icon.svg'
+import ItalicIcon from '../../../public/svgs/italic-icon.svg'
+import MentionIcon from '../../../public/svgs/mention-icon.svg'
+import OrderListIcon from '../../../public/svgs/numbered-list-icon.svg'
+import UnorderListIcon from '../../../public/svgs/ordered-list-icon.svg'
+import UrlIcon from '../../../public/svgs/url-icon.svg'
 import getSelectedNode from '../../utils/getSelectedNode'
-import {sanitizeUrl} from '../../utils/urls'
+import { sanitizeUrl } from '../../utils/urls'
 
 const LowPriority = 1
 
-export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<boolean>}) {
+export function ToolbarPlugin({
+  setIsLinkEditMode,
+}: {
+  setIsLinkEditMode: Dispatch<boolean>
+}) {
   const [editor] = useLexicalComposerContext()
   const [isLink, setIsLink] = useState(false)
   const [isBold, setIsBold] = useState(false)
@@ -53,16 +58,20 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode()
       const element =
-        anchorNode.getKey() === 'root' ? anchorNode : anchorNode.getTopLevelElementOrThrow()
+        anchorNode.getKey() === 'root'
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow()
       const elementKey = element.getKey()
       const elementDOM = editor.getElementByKey(elementKey)
       if (elementDOM !== null) {
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType(anchorNode, ListNode)
-          const type = parentList ? parentList.getTag() : element.getTag()
+          const type = parentList ? parentList?.getListType() : element.getTag()
           setBlockType(type)
         } else {
-          const type = $isHeadingNode(element) ? element.getTag() : element.getType()
+          const type = $isHeadingNode(element)
+            ? element.getTag()
+            : element.getType()
           setBlockType(type)
         }
       }
@@ -85,7 +94,7 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({editorState}) => {
+      editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
           $updateToolbar()
         })
@@ -97,25 +106,27 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
           $updateToolbar()
           return false
         },
-        LowPriority,
-      ),
+        LowPriority
+      )
     )
   }, [editor, $updateToolbar])
 
   useEffect(() => {
-    return editor.registerUpdateListener(({editorState}: {editorState: EditorState}) => {
-      editorState.read(() => {
-        $updateToolbar()
-      })
-    })
+    return editor.registerUpdateListener(
+      ({ editorState }: { editorState: EditorState }) => {
+        editorState.read(() => {
+          $updateToolbar()
+        })
+      }
+    )
   }, [editor, $updateToolbar])
 
   useEffect(() => {
     return activeEditor.registerCommand(
       KEY_MODIFIER_COMMAND,
-      payload => {
+      (payload) => {
         const event: KeyboardEvent = payload
-        const {code, ctrlKey, metaKey} = event
+        const { code, ctrlKey, metaKey } = event
 
         if (code === 'KeyK' && (ctrlKey || metaKey)) {
           event.preventDefault()
@@ -131,7 +142,7 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
         }
         return false
       },
-      COMMAND_PRIORITY_NORMAL,
+      COMMAND_PRIORITY_NORMAL
     )
   }, [activeEditor, isLink, setIsLinkEditMode])
 
@@ -146,69 +157,224 @@ export function ToolbarPlugin({setIsLinkEditMode}: {setIsLinkEditMode: Dispatch<
   }, [activeEditor, isLink, setIsLinkEditMode])
 
   return (
-      <div className='flex items-center justify-start w-full gap-4'>
-          <span>
-            <button color={isBold ? 'primary' : 'default'}>
-              <Paperclip strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button color={isBold ? 'primary' : 'default'}>
-              <AtSign strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button color={isBold ? 'primary' : 'default'}>
-              <Smile strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
-              color={isBold ? 'primary' : 'default'}>
-              <Bold strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
-              color={isItalic ? 'primary' : 'default'}>
-              <Italic strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
-              color={isUnderline ? 'primary' : 'default'}>
-              <Underline strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={insertLink}
-              color={isLink ? 'primary' : 'default'}>
-              <Link2 strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={formatBulletList.bind(null, {blockType, editor})}>
-              <List strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={formatNumberedList.bind(null, {blockType, editor})}>
-              <ListOrdered strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-          <span>
-            <button
-              onClick={formatQuote.bind(null, {blockType, editor})}>
-              <Quote strokeWidth={1} width={18} height={18} />
-            </button>
-          </span>
-      </div>
+    <div className='flex items-center justify-start w-full gap-2 flex-wrap sm:gap-4'>
+      <span>
+        <button
+          className='item'
+          color={isBold ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: 'transparent',
+          }}
+        >
+          <AttachmentIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          color={isBold ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: 'transparent',
+          }}
+        >
+          <MentionIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          color={isBold ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: 'transparent',
+          }}
+        >
+          <EmojiIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
+          color={isBold ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: isBold ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <BoldIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
+          color={isItalic ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: isItalic ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <ItalicIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={() =>
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')
+          }
+          color={isUnderline ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: isUnderline ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <Underline
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={insertLink}
+          color={isLink ? 'primary' : 'default'}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: isLink ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <UrlIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={formatNumberedList.bind(null, { blockType, editor })}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background:
+              blockType === 'ol' || blockType === 'number'
+                ? '#f1f1f1'
+                : 'transparent',
+          }}
+        >
+          <OrderListIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={formatBulletList.bind(null, { blockType, editor })}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background:
+              blockType === 'ul' || blockType === 'bullet'
+                ? '#f1f1f1'
+                : 'transparent',
+          }}
+        >
+          <UnorderListIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={formatCheckList.bind(null, { blockType, editor })}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: blockType === 'check' ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <CheckboxListIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={formatCode.bind(null, { blockType, editor })}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: blockType === 'code' ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <CodeIcon
+            strokeWidth={1}
+            width={18}
+            height={18}
+          />
+        </button>
+      </span>
+      <span>
+        <button
+          className='item'
+          onClick={formatQuote.bind(null, { blockType, editor })}
+          style={{
+            padding: '2px',
+            borderRadius: '4px',
+            background: blockType === 'quote' ? '#f1f1f1' : 'transparent',
+          }}
+        >
+          <Quote
+            strokeWidth={1}
+            width={16}
+            height={16}
+          />
+        </button>
+      </span>
+    </div>
   )
 }
 
@@ -217,7 +383,7 @@ interface ToolbarPluginProps {
   editor: LexicalEditor
 }
 
-const formatParagraph = ({blockType, editor}: ToolbarPluginProps) => {
+const formatParagraph = ({ blockType, editor }: ToolbarPluginProps) => {
   if (blockType !== 'paragraph') {
     editor.update(() => {
       const selection = $getSelection()
@@ -229,23 +395,31 @@ const formatParagraph = ({blockType, editor}: ToolbarPluginProps) => {
   }
 }
 
-const formatBulletList = ({blockType, editor}: ToolbarPluginProps) => {
-  if (blockType !== 'ul') {
+const formatBulletList = ({ blockType, editor }: ToolbarPluginProps) => {
+  if (blockType !== 'ul' && blockType !== 'bullet') {
     editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
   } else {
     editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
   }
 }
 
-const formatNumberedList = ({blockType, editor}: ToolbarPluginProps) => {
-  if (blockType !== 'ol') {
+const formatNumberedList = ({ blockType, editor }: ToolbarPluginProps) => {
+  if (blockType !== 'ol' && blockType !== 'number') {
     editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
   } else {
     editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
   }
 }
 
-const formatQuote = ({blockType, editor}: ToolbarPluginProps) => {
+const formatCheckList = ({ blockType, editor }: ToolbarPluginProps) => {
+  if (blockType !== 'check') {
+    editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
+  } else {
+    editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
+  }
+}
+
+const formatQuote = ({ blockType, editor }: ToolbarPluginProps) => {
   if (blockType !== 'quote') {
     editor.update(() => {
       const selection = $getSelection()
@@ -255,6 +429,20 @@ const formatQuote = ({blockType, editor}: ToolbarPluginProps) => {
       }
     })
   } else {
-    formatParagraph({blockType, editor})
+    formatParagraph({ blockType, editor })
+  }
+}
+
+const formatCode = ({ blockType, editor }: ToolbarPluginProps) => {
+  if (blockType !== 'code') {
+    editor.update(() => {
+      const selection = $getSelection()
+
+      if ($isRangeSelection(selection)) {
+        $wrapNodes(selection, () => $createCodeNode())
+      }
+    })
+  } else {
+    formatParagraph({ blockType, editor })
   }
 }

@@ -2,11 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @layer base {
   :root {
-
     --background: 0 0% 100%;
 
     --foreground: 0 0% 3.9%;
@@ -55,10 +52,9 @@
 
     --chart-5: 27 87% 67%;
 
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
-
     --background: 0 0% 3.9%;
 
     --foreground: 0 0% 98%;
@@ -105,11 +101,9 @@
 
     --chart-4: 280 65% 60%;
 
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   body {
@@ -160,6 +154,71 @@
   margin: 0;
   margin-left: 16px;
   list-style-type: disc;
+}
+
+.editor-list-ul li[role='checkbox'][aria-checked='true'],
+.editor-list-ul li[role='checkbox'] {
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-top: 10px;
+  list-style-type: none;
+  outline: none;
+}
+.editor-list-ul li[role='checkbox'][aria-checked='true'] {
+  text-decoration: line-through;
+}
+.editor-list-ul li[role='checkbox']:before,
+.editor-list-ul li[role='checkbox']:before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 0;
+  cursor: pointer;
+  display: block;
+  background-size: cover;
+  position: absolute;
+  border-radius: 2px;
+  background-color: transparent;
+  border: 1px solid #ccc;
+}
+
+.editor-list-ul li[role='checkbox'][dir='rtl']:before,
+.editor-list-ul li[role='checkbox'][aria-checked='true'][dir='rtl']:before {
+  left: auto;
+  right: 0;
+}
+.editor-list-ul li[role='checkbox']:focus:before,
+.editor-list-ul li[role='checkbox'][aria-checked='true']:focus:before {
+  box-shadow: 0 0 0 2px #a6cdfe;
+  border-radius: 2px;
+}
+.editor-list-ul li[role='checkbox']:before {
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+.editor-list-ul li[role='checkbox'][aria-checked='true']:before {
+  border: 1px solid rgb(61, 135, 245);
+  border-radius: 2px;
+  background-color: #3d87f5;
+  background-repeat: no-repeat;
+}
+.editor-list-ul li[role='checkbox'][aria-checked='true']:after {
+  content: '';
+  cursor: pointer;
+  border-color: #fff;
+  border-style: solid;
+  position: absolute;
+  display: block;
+  top: 6px;
+  width: 3px;
+  left: 7px;
+  height: 6px;
+  transform: rotate(45deg);
+  border-width: 0 2px 2px 0;
 }
 
 .editor-listitem {
@@ -235,8 +294,8 @@
   position: absolute;
   text-overflow: ellipsis;
   font-weight: 500;
-  top: 5px;
-  left: 5px;
+  top: 16px;
+  left: 16px;
   font-size: 0.875rem;
   user-select: none;
   display: inline-block;

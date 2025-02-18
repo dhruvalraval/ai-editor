@@ -24,30 +24,48 @@ interface DropdownMenuCheckboxesProps {
   title: React.ReactElement<unknown> | string
   options: Option[]
   selectedOptions: { [key: string]: Checked }
-  setSelectedOptions: React.Dispatch<React.SetStateAction<{ [key: string]: Checked }>>
+  setSelectedOptions: React.Dispatch<
+    React.SetStateAction<{ [key: string]: Checked }>
+  >
 }
 
-export function MultiSelectMenu({ title, options, selectedOptions, setSelectedOptions }: DropdownMenuCheckboxesProps) {
+export function MultiSelectMenu({
+  title,
+  options,
+  selectedOptions,
+  setSelectedOptions,
+}: DropdownMenuCheckboxesProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-      <Button variant="outline" size="sm" className="h-8">{title}</Button>
+        <Button
+          variant='outline'
+          size='sm'
+          className='h-8 rounded-[8px]'
+        >
+          {title}
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className='w-56'>
         <DropdownMenuSeparator />
         {options.map((option) => (
           <DropdownMenuCheckboxItem
             key={option.value}
             checked={selectedOptions[option.value]}
-            onCheckedChange={(checked) => 
-              setSelectedOptions(prev => ({ ...prev, [option.value]: checked }))
+            onCheckedChange={(checked) =>
+              setSelectedOptions((prev) => ({
+                ...prev,
+                [option.value]: checked,
+              }))
             }
             disabled={option.disabled}
-            className="flex items-center gap-2"
+            className='flex items-center gap-2'
             style={{
               //if checked, add a background color
               cursor: 'pointer',
-              backgroundColor: selectedOptions[option.value] ? 'var(--accent-foreground)' : 'transparent',
+              backgroundColor: selectedOptions[option.value]
+                ? 'var(--accent-foreground)'
+                : 'transparent',
             }}
           >
             {option.icon}

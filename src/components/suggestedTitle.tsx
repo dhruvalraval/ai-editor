@@ -19,7 +19,6 @@ function SuggestedTitle({
   setSuggestedTags: Dispatch<SetStateAction<Tag[]>>
   setIsLoading: Dispatch<SetStateAction<boolean>>
 }) {
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchTags = useCallback(
     debounce(async (title: string) => {
@@ -38,9 +37,9 @@ function SuggestedTitle({
               content: [
                 {
                   type: 'text',
-                  text: `You are a helpful assistant that suggests tags for a ticket title based on the title provided. Tags should be from this list: ${
-                TAGS.join(', ')
-                }. Return only the tag names separated by commas.`,
+                  text: `You are a helpful assistant that suggests tags for a ticket title based on the title provided. Tags should be from this list: ${TAGS.join(
+                    ', '
+                  )}. Return only the tag names separated by commas.`,
                 },
               ],
             },
@@ -63,9 +62,9 @@ function SuggestedTitle({
         const suggestedText = response.choices[0].message.content
         const parsedTags = suggestedText
           ?.split(',')
-          .map(tag => tag.trim())
-          .filter(tag => TAGS.includes(tag as Tag)) as Tag[]
-        
+          .map((tag) => tag.trim())
+          .filter((tag) => TAGS.includes(tag as Tag)) as Tag[]
+
         setSuggestedTags(parsedTags)
       } catch (error) {
         /*eslint-disable-next-line no-console*/
@@ -88,7 +87,7 @@ function SuggestedTitle({
           debouncedFetchTags(newTitle)
         }}
         placeholder='Task title'
-        className='border-none outline-none p-0 text-lg font-medium box-shadow-none'
+        className=' border-none outline-none p-0 text-lg font-medium box-shadow-none'
       />
     </>
   )
