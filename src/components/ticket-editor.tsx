@@ -50,6 +50,7 @@ import InitializeContentPlugin from './plugins/InitializeContentPlugin'
 import { ToolbarPlugin } from './plugins/ToolbarPlugin'
 import { SingleSelectMenu } from './singleselect-menu'
 import { Badge } from './ui/badge'
+import { Calendar } from './ui/calendar'
 
 type Checked = DropdownMenuCheckboxItemProps['checked']
 // Catch any errors that occur during Lexical updates and log them
@@ -392,6 +393,7 @@ function Component({
   const [selectedAssignee, setSelectedAssignee] = useState<Option | null>(null)
   const [selectedPriority, setSelectedPriority] = useState<Option | null>(null)
   const [selectedProject, setSelectedProject] = useState<Option | null>(null)
+  const [openCalender, setOpenCalender] = useState<boolean>(false)
 
   useEffect(() => {
     if (reset) {
@@ -734,16 +736,33 @@ function Component({
               options={projectOptions}
               setSelectedOption={setSelectedProject}
             />
-            <Button
-              variant='outline'
-              size='sm'
-              className='h-8 rounded-[8px]'
-            >
-              <div className='flex items-center gap-2 text-[#94989E]'>
-                <DueDateIcon className='h-4 w-4' />
-                Due Date
-              </div>
-            </Button>
+            <span className='relative'>
+              <Button
+                variant='outline'
+                size='sm'
+                className='h-8 rounded-[8px]'
+                onClick={() => setOpenCalender(!openCalender)}
+              >
+                <div className='flex items-center gap-2 text-[#94989E]'>
+                  <DueDateIcon className='h-4 w-4' />
+                  Due Date
+                </div>
+              </Button>
+              <AnimatePresence>
+                {openCalender && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, x: '-50%' }}
+                    animate={{ opacity: 1, y: 0, x: '-50%' }}
+                    exit={{ opacity: 0, y: 10, x: '-50%' }}
+                    transition={{ duration: 0.3 }}
+                    layout
+                    className='absolute top-10 left-[50%] translate-x-[-50%] bg-white rounded-lg'
+                  >
+                    <Calendar mode='single' />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </span>
           </div>
           <div className='flex items-center justify-start w-full h-[65px] gap-4 mt-4 border-t px-4'>
             <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
